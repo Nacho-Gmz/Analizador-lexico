@@ -1,2 +1,2 @@
-# Analizador-lexico
-Analizador léxico con flex
+# Analizador-sintáctico
+Analizador sintáctico con flex y bison
