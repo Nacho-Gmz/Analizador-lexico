@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "sintactico.tab.h"
+
+int num_lines = 1;
 %}
 
 /*Seccion de opciones*/
@@ -10,23 +13,24 @@
 %option outfile = "scanner.c"
 
 
-/* TOKEN SECTION */
+/* SECCION DE TOKENS */
 
-/*BASIC TOKENS*/
-DIGIT             [0-9]
-LETTER            [a-zA-ZñÑ]
-UNDERSCORE        [_]
-COMMA             ","
-POINT             "."
-COMMENT           "//"
-SEMICOLON         ";"
-SPACES            [" "\n\t]
-CHAIN             \"[^\n"]*\"
-INTEGER           (-?[1-9][0-9]{0,4})|0
-REAL              {DIGIT}{0,8}"."{DIGIT}{1,8}
-ID                {LETTER}({LETTER}|{DIGIT}|{UNDERSCORE})*
+/*TOKENS BASICOS*/
+DIGITO            [0-9]
+LETRA             [a-zA-ZñÑ]
+GUIONBAJO         [_]
+COMA              ","
+PUNTO             "."
+COMENTARIO        "//"
+PUNTOYCOMA        ";"
+ESPACIOS          [" "\n\t]         
+CADENA            \"[^\n"]*\"
+CARACTER          \"[^\n"]\"
+ENTERO            (-?[1-9][0-9]{0,4})|0
+REAL              {DIGITO}{0,8}"."{DIGITO}{1,8}
+ID                {LETRA}({LETRA}|{DIGITO}|{GUIONBAJO})*
 
-/*RESERVED WORDS*/
+/*PALABRAS RESERVADAS*/
 IF                "if"
 ELSE              "else"
 WHILE             "while"
@@ -36,90 +40,103 @@ FLOAT             "float"
 STRING            "string"
 CHAR              "char"
 PRINT             "print"
-SCAN              "scan"
+INPUT             "input"
 AND               "and"
 OR                "or"
+BOOL              "bool"
+TRUE              "true"
+FALSE             "false"
+LIST              "list"
+INSERT            "insert"
+POP               "pop"
 
-/*DELIMITERS*/
-BRACKET_O             "{"
-BRACKET_C             "}"
-PARENTHESES_O     "("
-PARENTHESES_C     ")"
-SQUARE_BRACKET_O  "["
-SQUARE_BRACKET_C  "]" 
+/*DELIMITADORES*/
+LLAVE_A           "{"
+LLAVE_C           "}"
+PARENTESIS_A      "("
+PARENTESIS_C      ")"
+CORCHETE_A        "["
+CORCHETE_C        "]" 
 
-/*OPERATORS*/
-SUM                  "+"
-SUBTRACTION          "-"
-MULTIPLICATION       "*"
-DIVISION             "/"
-EQUAL                "="
-LESS_THAN            "<"
-LESS_OR_EQUAL_THAN   "<="
-MORE_THAN            ">"
-MORE_OR_EQUAL_THAN   ">="
-EQUAL_THAN           "=="
-NEGATION             "!"
-DIFFERENT            "!="
+/*OPERADORES*/
+OP_SUMA           "+"
+OP_RESTA          "-"
+OP_MULT           "*"
+OP_DIV            "/"
+OP_IGUAL          "="
+OP_MENOR          "<"
+OP_MENORIGUAL     "<="
+OP_MAYOR          ">"
+OP_MAYORIGUAL     ">="
+OP_COMP_IGUAL     "=="
+OP_NEGACION       "!"
+OP_DISTINTO       "!="
 
-/*Rules section, its order is very important because the pattern will be searched and executed in a sequential manner*/
+/*Seccion de reglas, es importante el orden debido a que se buscara el patron y se ejecutara el patron en orden secuencial*/
 %%
 
-{COMMA}            {printf("COMMA: %s\n", yytext);}
-{SEMICOLON}        {printf("SEMICOLON: %s\n", yytext);}
-{INTEGER}          {printf("INTEGER: %s\n", yytext);}
-{REAL}             {printf("REAL: %s\n", yytext);}
-{CHAIN}            {printf("CHAIN: %s\n", yytext);}
-{UNDERSCORE}       {printf("UNDERSCORE: %s\n", yytext);}
-{POINT}            {printf("POINT: %s\n", yytext);}
-{COMMENT}          {printf("COMMENT: %s\n", yytext);}
+{COMA}            {return COMA;}
+{PUNTOYCOMA}      {return PUNTOYCOMA;}
+{ENTERO}          {return ENTERO;}
+{REAL}            {return REAL;}
+{CARACTER}        {return CARACTER;}
+{CADENA}          {return CADENA;}
+{GUIONBAJO}       {return GUIONBAJO;}
+{PUNTO}           {return PUNTO;}
+{COMENTARIO}      {return COMENTARIO;}
 
  
-{SUM}                {printf("SUM OPERATOR: %s\n", yytext);}
-{SUBTRACTION}        {printf("SUBTRACTION OPERATOR: %s\n", yytext);}
-{MULTIPLICATION}     {printf("MULTIPLICATION OPERATOR: %s\n", yytext);}
-{DIVISION}           {printf("DIVISION OPERATOR: %s\n", yytext);}
-{EQUAL}              {printf("EQUAL OPERATOR: %s\n", yytext);}
-{LESS_THAN}          {printf("LESS THAN OPERATOR: %s\n", yytext);}
-{LESS_OR_EQUAL_THAN} {printf("LESS OR EQUAL THAN OPERATOR: %s\n", yytext);}
-{MORE_THAN}          {printf("MORE THAN OPERATOR: %s\n", yytext);}
-{MORE_OR_EQUAL_THAN} {printf("MORE OR EQUAL THAN OPERATOR: %s\n", yytext);}
-{EQUAL_THAN}         {printf("EQUAL THAN OPERATOR: %s\n", yytext);}
-{NEGATION}           {printf("NEGATION OPERATOR: %s\n", yytext);}
-{DIFFERENT}          {printf("DIFFERENT OPERATOR: %s\n", yytext);}
+{OP_SUMA}         {return OP_SUMA;}
+{OP_RESTA}        {return OP_RESTA;}
+{OP_MULT}         {return OP_MULT;}
+{OP_DIV}          {return OP_DIV;}
+{OP_IGUAL}        {return OP_IGUAL;}
+{OP_MENOR}        {return OP_MENOR;}
+{OP_MENORIGUAL}   {return OP_MENORIGUAL;}
+{OP_MAYOR}        {return OP_MAYOR;}
+{OP_MAYORIGUAL}   {return OP_MAYORIGUAL;}
+{OP_COMP_IGUAL}   {return OP_COMP_IGUAL;}
+{OP_NEGACION}     {return OP_NEGACION;}
+{OP_DISTINTO}     {return OP_DISTINTO;}
 
-{BRACKET_O}          {printf("OPENING BRACKET: %s\n", yytext);}
-{BRACKET_C}          {printf("CLOSING BRACKET: %s\n", yytext);}
-{PARENTHESES_O}      {printf("OPENING PARENTHESES: %s\n", yytext);}
-{PARENTHESES_C}      {printf("CLOSING PARENTHESES: %s\n", yytext);}
-{SQUARE_BRACKET_O}   {printf("OPENING SQUARE BRACKET: %s\n", yytext);}
-{SQUARE_BRACKET_C}   {printf("CLOSING SQUARE BRACKET: %s\n", yytext);}  
+{LLAVE_A}         {return LLAVE_A;}
+{LLAVE_C}         {return LLAVE_C;}
+{PARENTESIS_A}    {return PARENTESIS_A;}
+{PARENTESIS_C}    {return PARENTESIS_C;}
+{CORCHETE_A}      {return CORCHETE_A;}
+{CORCHETE_C}      {return CORCHETE_C;}
 
-{IF}              {printf("RESERVED WORD IF\n");}
-{ELSE}            {printf("RESERVED WORD ELSE\n");}
-{WHILE}           {printf("RESERVED WORD WHILE\n");}
-{FOR}             {printf("RESERVED WORD FOR\n");}
-{INT}             {printf("RESERVED WORD INT\n");}
-{FLOAT}           {printf("RESERVED WORD FLOAT\n");}
-{STRING}          {printf("RESERVED WORD STRING\n");}
-{CHAR}            {printf("RESERVED WORD CHAR\n");}
-{PRINT}           {printf("RESERVED WORD PRINT\n");}
-{SCAN}            {printf("RESERVED WORD SCAN\n");}
-{AND}             {printf("RESERVED WORD AND\n");}
-{OR}              {printf("RESERVED WORD OR\n");}       
+{IF}              {return IF;}
+{ELSE}            {return ELSE;}
+{WHILE}           {return WHILE;}
+{FOR}             {return FOR;}
+{INT}             {return INT;}
+{FLOAT}           {return FLOAT;}
+{STRING}          {return STRING;}
+{CHAR}            {return CHAR;}
+{PRINT}           {return PRINT;}
+{INPUT}           {return INPUT;}
+{AND}             {return AND;}
+{OR}              {return OR;}
+{TRUE}            {return TRUE;}
+{FALSE}           {return FALSE;}
+{BOOL}            {return BOOL;}
+{LIST}            {return LIST;}
+{INSERT}          {return INSERT;}
+{POP}             {return POP;}
 
-{ID}              {printf("ID: %s\n", yytext);}
+{ID}              {return ID;}
 
-{SPACES}      
+{ESPACIOS}
 
-.               {printf("Error, Invalid Character: %s\n", yytext);}
+.               {printf("Error, caracter invalido: %s\n", yytext);}
 
 %%
 
-int main(){
+/*int main(){
     
     char linea[255];
-    FILE *archivo = fopen("code.txt","r");
+    FILE *archivo = fopen("codigo.txt","r");
     FILE *aux = fopen("tem.txt", "w");
 
     while(fgets(linea, sizeof(linea), archivo)){
@@ -139,4 +156,4 @@ int main(){
     fclose(aux);
     remove("tem.txt");
     return 0;
-}
+}*/
