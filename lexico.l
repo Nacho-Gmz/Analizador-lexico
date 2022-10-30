@@ -12,7 +12,6 @@ int num_lines = 1;
 /* Nombre de salida del archivo */
 %option outfile = "scanner.c"
 
-
 /* SECCION DE TOKENS */
 
 /*TOKENS BASICOS*/
