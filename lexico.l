@@ -21,13 +21,13 @@ LETRA             [a-zA-ZñÑ]
 GUIONBAJO         [_]
 COMA              ","
 PUNTO             "."
-COMENTARIO        "//"
 PUNTOYCOMA        ";"
 ESPACIOS          [" "\n\t]         
-CADENA            \"[^\n"]*\"
-CARACTER          \"[^\n"]\"
+COMENTARIO        "//"[^\n]*
+CADENA            (\"[^\n"]*\")
+CARACTER          \'[^\n']\'
 ENTERO            (-?[1-9][0-9]{0,4})|0
-REAL              {DIGITO}{0,8}"."{DIGITO}{1,8}
+REAL              (-?{DIGITO}{0,8}"."{DIGITO}{1,8})
 ID                {LETRA}({LETRA}|{DIGITO}|{GUIONBAJO})*
 
 /*PALABRAS RESERVADAS*/
@@ -46,9 +46,7 @@ OR                "or"
 BOOL              "bool"
 TRUE              "true"
 FALSE             "false"
-LIST              "list"
-INSERT            "insert"
-POP               "pop"
+STRCMP            "strcmp"
 
 /*DELIMITADORES*/
 LLAVE_A           "{"
@@ -77,14 +75,13 @@ OP_DISTINTO       "!="
 
 {COMA}            {return COMA;}
 {PUNTOYCOMA}      {return PUNTOYCOMA;}
-{ENTERO}          {return ENTERO;}
-{REAL}            {return REAL;}
-{CARACTER}        {return CARACTER;}
-{CADENA}          {return CADENA;}
+{ENTERO}          {yylval.ival = atoi(yytext); return ENTERO;}
+{REAL}            {yylval.fval = atof(yytext); return REAL;}
+{CARACTER}        {yylval.car = yytext[1]; return CARACTER;}
+{CADENA}          {yylval.str = strdup(yytext); return CADENA;}
 {GUIONBAJO}       {return GUIONBAJO;}
 {PUNTO}           {return PUNTO;}
 {COMENTARIO}      {return COMENTARIO;}
-
  
 {OP_SUMA}         {return OP_SUMA;}
 {OP_RESTA}        {return OP_RESTA;}
@@ -118,42 +115,15 @@ OP_DISTINTO       "!="
 {INPUT}           {return INPUT;}
 {AND}             {return AND;}
 {OR}              {return OR;}
-{TRUE}            {return TRUE;}
-{FALSE}           {return FALSE;}
+{TRUE}            {yylval.ival = 1; return TRUE;}
+{FALSE}           {yylval.ival = 0; return FALSE;}
 {BOOL}            {return BOOL;}
-{LIST}            {return LIST;}
-{INSERT}          {return INSERT;}
-{POP}             {return POP;}
+{STRCMP}          {return STRCMP;}
 
-{ID}              {return ID;}
+{ID}              {yylval.str = strdup(yytext); return ID;}
 
 {ESPACIOS}
 
 .               {printf("Error, caracter invalido: %s\n", yytext);}
 
 %%
-
-/*int main(){
-    
-    char linea[255];
-    FILE *archivo = fopen("codigo.txt","r");
-    FILE *aux = fopen("tem.txt", "w");
-
-    while(fgets(linea, sizeof(linea), archivo)){
-        aux = freopen("tem.txt", "w", aux);
-        
-        if(linea[strlen(linea)-1] == '\n')
-            linea[strlen(linea)-1] = ' ';
-        
-        printf("\n%s\n\n", linea);
-        fprintf(aux, "%s", linea);
-        aux = freopen("tem.txt", "r", aux);
-        yyin = aux;
-        yylex();  
-    }
-    
-    fclose(archivo);
-    fclose(aux);
-    remove("tem.txt");
-    return 0;
-}*/
